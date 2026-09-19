@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Nav } from '@/components/nav'
+import { Dock } from '@/components/nav'
 import { getCurrentUser } from '@/lib/queries'
 
 export default async function AppLayout({
@@ -8,53 +8,44 @@ export default async function AppLayout({
   children: React.ReactNode
 }) {
   const user = await getCurrentUser()
+  const initial = user?.email?.[0]?.toUpperCase() ?? '·'
 
   return (
-    <div className="flex min-h-screen">
-      {/* ---------------------------- Barra lateral --------------------------- */}
-      <aside className="hidden w-60 shrink-0 flex-col border-r border-rule md:flex">
-        <div className="border-b border-rule px-5 py-6">
-          <p className="eyebrow text-gold">Build Day</p>
-          <h1 className="headline mt-1 text-xl leading-tight text-paper">
-            Finanzas
-            <br />
-            Medellín
-          </h1>
+    <div className="min-h-screen">
+      {/* ----------------------------- Barra superior ------------------------- */}
+      <header className="mx-auto flex max-w-5xl items-center justify-between px-5 pt-5 md:px-8">
+        <Link href="/" className="headline flex items-center gap-2 text-lg">
+          <span aria-hidden className="size-3 rotate-45 rounded-[3px] bg-chicle" />
+          Finanzas
+        </Link>
+
+        <div className="flex items-center gap-2">
+          {user && (
+            <form action="/auth/signout" method="post">
+              <button
+                type="submit"
+                className="rounded-full px-3 py-1.5 text-xs text-paper-dim transition-colors hover:bg-superficie hover:text-carbon"
+              >
+                Cerrar sesión
+              </button>
+            </form>
+          )}
+          <span
+            title={user?.email ?? 'Sin sesión'}
+            className="headline grid size-9 place-items-center rounded-full bg-lavanda text-sm"
+          >
+            {initial}
+          </span>
         </div>
+      </header>
 
-        <Nav />
+      {/* ------------------------------ Contenido ----------------------------- */}
+      {/* pb extra: el dock flota encima y no debe tapar lo último de la página. */}
+      <main className="mx-auto max-w-5xl px-5 pb-36 pt-6 md:px-8 md:pt-10">
+        {children}
+      </main>
 
-        <div className="mt-auto border-t border-rule px-5 py-4">
-          <p className="truncate text-xs text-paper-faint">
-            {user?.email ?? 'Sin sesión'}
-          </p>
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              className="mt-2 text-xs text-paper-dim underline underline-offset-4 transition-colors hover:text-red"
-            >
-              Cerrar sesión
-            </button>
-          </form>
-        </div>
-      </aside>
-
-      {/* --------------------------- Contenido -------------------------------- */}
-      <div className="flex min-w-0 flex-1 flex-col">
-        {/* Nav móvil */}
-        <div className="flex gap-4 overflow-x-auto border-b border-rule px-4 py-3 md:hidden">
-          <Link href="/" className="headline shrink-0 text-base text-gold">
-            Finanzas
-          </Link>
-          {['/transacciones', '/efectivo', '/gmail', '/chat'].map((h) => (
-            <Link key={h} href={h} className="shrink-0 text-sm text-paper-dim">
-              {h.replace('/', '')}
-            </Link>
-          ))}
-        </div>
-
-        <main className="flex-1 px-5 py-8 md:px-10 md:py-12">{children}</main>
-      </div>
+      <Dock />
     </div>
   )
 }

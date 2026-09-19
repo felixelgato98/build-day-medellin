@@ -14,11 +14,12 @@ export function ModuleNotice({
   children: React.ReactNode
 }) {
   return (
-    <div className="border border-dashed border-gold/40 bg-gold/5 px-5 py-4">
-      <p className="eyebrow text-gold">Módulo · {module}</p>
+    <div className="rounded-[24px] border-2 border-dashed border-linea px-5 py-4">
+      <p className="text-xs font-semibold">Módulo · {module}</p>
       <p className="mt-2 text-sm leading-relaxed text-paper-dim">{children}</p>
-      <p className="tabular mt-3 text-xs text-paper-faint">
-        Tu código va en <span className="text-gold">{folder}</span>
+      <p className="mt-3 text-xs text-paper-faint">
+        Tu código va en{' '}
+        <code className="rounded-full bg-vainilla/60 px-2 py-0.5 text-carbon">{folder}</code>
       </p>
     </div>
   )
