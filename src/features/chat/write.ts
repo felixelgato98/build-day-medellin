@@ -37,12 +37,9 @@ export async function insertTransaction(input: NewTx): Promise<TxRow> {
     source: input.source,
   }
 
-  // Los tipos de @/lib/types están escritos a mano y no traen `Relationships`,
-  // así que supabase-js no reconoce el schema y tipa el insert como `never`.
-  // Validamos contra nuestro propio Insert arriba y casteamos acá.
   const { data, error } = await supabase
     .from('transactions')
-    .insert(row as never)
+    .insert(row)
     .select(SELECT_ROW)
     .single()
 

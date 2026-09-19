@@ -121,3 +121,11 @@ test('describeStreamError nunca filtra el mensaje crudo de errores desconocidos'
 test('describeStreamError tolera valores que no son Error', () => {
   assert.equal(typeof describeStreamError('boom'), 'string')
 })
+
+test('describeStreamError también lee responseBody del gateway', () => {
+  const err = Object.assign(new Error('Failed to process error response'), {
+    statusCode: 403,
+    responseBody: '{"error":{"type":"no_providers_available","name":"RestrictedModelsError"}}',
+  })
+  assert.match(describeStreamError(err), /plan gratuito|créditos/i)
+})

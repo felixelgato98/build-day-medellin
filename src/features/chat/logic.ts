@@ -126,11 +126,14 @@ export function normalizeRange(
  * traer rutas, tokens o stack traces.
  */
 export function describeStreamError(err: unknown): string {
-  const e = err as { message?: unknown; statusCode?: unknown } | null
-  const message = typeof e?.message === 'string' ? e.message : ''
+  const e = err as { message?: unknown; statusCode?: unknown; responseBody?: unknown } | null
   const status = typeof e?.statusCode === 'number' ? e.statusCode : undefined
+  // El gateway a veces manda un message genérico y el detalle real en responseBody.
+  const message = [e?.message, e?.responseBody]
+    .filter((v): v is string => typeof v === 'string')
+    .join(' ')
 
-  if (/free tier|restricted ?model|upgrade to paid/i.test(message)) {
+  if (/free tier|restricted ?models?|no_providers_available|upgrade to paid/i.test(message)) {
     return 'El AI Gateway rechazó el modelo: la cuenta de Vercel está en plan gratuito y no tiene créditos para este modelo.'
   }
   if (status === 401 || status === 403 || /unauthorized|forbidden|api key/i.test(message)) {

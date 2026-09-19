@@ -1,21 +1,15 @@
 import type { Metadata } from 'next'
-import { Fraunces, Archivo, JetBrains_Mono } from 'next/font/google'
+import { Bricolage_Grotesque, Geist } from 'next/font/google'
 import './globals.css'
 
-const fraunces = Fraunces({
+const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
-  variable: '--font-fraunces',
-  axes: ['SOFT', 'WONK', 'opsz'],
+  variable: '--font-bricolage',
 })
 
-const archivo = Archivo({
+const geist = Geist({
   subsets: ['latin'],
-  variable: '--font-archivo',
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono-jb',
+  variable: '--font-geist',
 })
 
 export const metadata: Metadata = {
@@ -28,9 +22,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es">
-      <body
-        className={`${fraunces.variable} ${archivo.variable} ${jetbrainsMono.variable} antialiased`}
-      >
+      <body className={`${bricolage.variable} ${geist.variable} antialiased`}>
         {children}
       </body>
     </html>
