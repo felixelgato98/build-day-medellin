@@ -59,5 +59,29 @@ export async function POST(req: Request) {
     messages: await convertToModelMessages(messages),
   })
 
-  return result.toUIMessageStreamResponse()
+  return result.toUIMessageStreamResponse({
+    // Por defecto el SDK manda "An error occurred." al cliente. Acá traducimos
+    // los fallos más comunes del Gateway a algo accionable para quien lo ve.
+    onError: describeError,
+  })
+}
+
+function describeError(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error)
+  const body =
+    error && typeof error === 'object' && 'responseBody' in error
+      ? String((error as { responseBody?: unknown }).responseBody ?? '')
+      : ''
+  const raw = `${message} ${body}`
+
+  if (/free tier|RestrictedModels|no_providers_available/i.test(raw)) {
+    return `Tu plan del AI Gateway no incluye el modelo ${CHAT_MODEL}. Cambiá CHAT_MODEL en src/lib/constants.ts o cargá créditos en Vercel.`
+  }
+  if (/api key|unauthorized|401|OIDC/i.test(raw)) {
+    return 'El AI Gateway rechazó la autenticación. Corré `vercel env pull` o definí AI_GATEWAY_API_KEY.'
+  }
+  if (/rate limit|429/i.test(raw)) {
+    return 'El modelo está saturado (límite de peticiones). Esperá un momento y reintentá.'
+  }
+  return message.slice(0, 200) || 'Error desconocido al hablar con el modelo.'
 }
