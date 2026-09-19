@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Dock } from '@/components/nav'
+import { DemoBanner } from '@/components/ui/demo-banner'
 import { getCurrentUser } from '@/lib/queries'
 
 export default async function AppLayout({
@@ -41,7 +42,8 @@ export default async function AppLayout({
 
       {/* ------------------------------ Contenido ----------------------------- */}
       {/* pb extra: el dock flota encima y no debe tapar lo último de la página. */}
-      <main className="mx-auto max-w-5xl px-5 pb-36 pt-6 md:px-8 md:pt-10">
+      <main className="mx-auto max-w-5xl space-y-6 px-5 pb-36 pt-6 md:px-8 md:pt-10">
+        <DemoBanner />
         {children}
       </main>
 

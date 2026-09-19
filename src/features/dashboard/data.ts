@@ -1,8 +1,8 @@
 import 'server-only'
 import { isSameDay, startOfDay, startOfMonth, subDays } from 'date-fns'
 import { getTransactions, type CategoryTotal, type PeriodSummary } from '@/lib/queries'
+import { isDemoMode } from '@/lib/demo'
 import type { TransactionWithCategory } from '@/lib/types'
-import { buildSampleTransactions } from './sample-data'
 
 export interface DayTotal {
   date: Date
@@ -15,7 +15,7 @@ export interface HomeData {
   byCategory: CategoryTotal[]
   week: DayTotal[]
   recent: TransactionWithCategory[]
-  /** true cuando Supabase no está configurado y se muestran datos de ejemplo. */
+  /** true cuando la app está en modo demo y se muestran datos de ejemplo. */
   isSample: boolean
 }
 
@@ -28,12 +28,9 @@ export async function getHomeData(now = new Date()): Promise<HomeData> {
   const weekStart = startOfDay(subDays(now, 6))
   const from = monthStart < weekStart ? monthStart : weekStart
 
-  const configured =
-    !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  const rows = configured
-    ? await getTransactions({ from: from.toISOString() })
-    : buildSampleTransactions(now)
+  // En modo demo `getTransactions` ya devuelve los datos falsos: acá no hay
+  // que distinguir nada, solo avisar arriba que son de ejemplo.
+  const rows = await getTransactions({ from: from.toISOString() })
 
   const month = rows.filter((t) => new Date(t.occurred_at) >= monthStart)
 
@@ -42,7 +39,7 @@ export async function getHomeData(now = new Date()): Promise<HomeData> {
     byCategory: groupByCategory(month),
     week: lastSevenDays(rows, now),
     recent: rows.slice(0, 6),
-    isSample: !configured,
+    isSample: isDemoMode(),
   }
 }
 

@@ -1,6 +1,13 @@
 import 'server-only'
 import { createClient } from '@/lib/supabase/server'
 import { WORKSPACE_ID } from '@/lib/constants'
+import {
+  buildDemoCategories,
+  buildDemoTransactions,
+  filterDemoTransactions,
+  isDemoMode,
+  isSupabaseConfigured,
+} from '@/lib/demo'
 import type {
   Category,
   TransactionKind,
@@ -16,14 +23,15 @@ import type {
  *
  * Si necesitás una query nueva y genérica, agregala acá en un PR aparte y avisá
  * al equipo. Si es específica de tu módulo, va en tu propia carpeta features/.
+ *
+ * MODO DEMO: con `DEMO_DATA=1` (o sin Supabase configurado) las lecturas
+ * devuelven datos falsos de `@/lib/demo`. Así las cuatro páginas y el chat se
+ * pueden mostrar sin base de datos. Ver `isDemoMode()`.
  */
 
 /** Lanza un error legible si falta la configuración, en vez de un crash opaco. */
 function assertConfigured() {
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  ) {
+  if (!isSupabaseConfigured()) {
     throw new Error(
       'Supabase no está configurado. Corré: vercel env pull .env.local',
     )
@@ -50,6 +58,8 @@ export interface TransactionFilters {
 export async function getTransactions(
   filters: TransactionFilters = {},
 ): Promise<TransactionWithCategory[]> {
+  if (isDemoMode()) return filterDemoTransactions(buildDemoTransactions(), filters)
+
   assertConfigured()
   const supabase = await createClient()
 
@@ -74,6 +84,8 @@ export async function getTransactions(
 
 /** Categorías del workspace, opcionalmente filtradas por tipo. */
 export async function getCategories(kind?: TransactionKind): Promise<Category[]> {
+  if (isDemoMode()) return buildDemoCategories(kind)
+
   assertConfigured()
   const supabase = await createClient()
 
@@ -167,12 +179,7 @@ export function currentMonthRange(): { from: string; to: string } {
 
 /** Usuario autenticado, o null. */
 export async function getCurrentUser() {
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  ) {
-    return null
-  }
+  if (!isSupabaseConfigured()) return null
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   return user

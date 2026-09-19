@@ -28,12 +28,6 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-10">
-      {data.isSample && (
-        <p className="w-fit rounded-full bg-chicle/40 px-3 py-1 text-xs">
-          Datos de ejemplo · conectá Supabase para ver los reales
-        </p>
-      )}
-
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-12">
         <div className="space-y-12">
           <Hero

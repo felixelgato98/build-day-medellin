@@ -7,6 +7,7 @@ import { PasteEmailForm } from '@/features/gmail/components/paste-email-form'
 import { SyncButton } from '@/features/gmail/components/sync-button'
 import { SyncLog } from '@/features/gmail/components/sync-log'
 import { WORKSPACE_ID } from '@/lib/constants'
+import { buildDemoSyncLog, isSupabaseConfigured } from '@/lib/demo'
 import { getCurrentUser, getTransactions } from '@/lib/queries'
 import { createClient } from '@/lib/supabase/server'
 import type {
@@ -112,11 +113,14 @@ async function leerCorridas(supabase: SupabaseServerClient): Promise<GmailSyncLo
 async function cargarDatos(): Promise<DatosDeLaPagina> {
   // El entorno se lee acá adentro y nunca al importar el módulo: arriba,
   // `npm run build` reventaría en cualquier runner sin .env.local.
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  ) {
-    throw new Error('Supabase no está configurado. Corré: vercel env pull .env.local')
+  // Sin Supabase la app entra en modo demo: no hay cuenta conectada, pero el
+  // historial y los movimientos salen de los datos de ejemplo.
+  if (!isSupabaseConfigured()) {
+    return {
+      cuenta: null,
+      corridas: buildDemoSyncLog(),
+      transacciones: await getTransactions({ source: 'gmail', limit: MAX_MOVIMIENTOS }),
+    }
   }
 
   const usuario = await getCurrentUser()

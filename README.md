@@ -129,6 +129,27 @@ La única que puede faltar es `SUPABASE_SERVICE_ROLE_KEY` (solo la necesita
 
 ---
 
+## Modo demo (datos falsos)
+
+Para mostrar la app sin una base de datos detrás, las lecturas de `@/lib/queries`
+pueden servir ~70 transacciones inventadas (dos meses, en COP, con los tres
+orígenes) definidas en `src/lib/demo.ts`. Se activa cuando:
+
+| Situación | Qué pasa |
+|---|---|
+| Supabase **no** está configurado (sin `NEXT_PUBLIC_SUPABASE_*`) | Modo demo automático, sin login |
+| `DEMO_DATA=1` en el entorno | Modo demo aunque Supabase sí esté configurado |
+| `DEMO_DATA=0` | Fuerza datos reales (útil para apagar la demo en un preview) |
+
+Arriba de cada página aparece el aviso **"Datos de ejemplo"** para que nadie
+confunda la demo con plata real. Para un demo en Vercel: Settings →
+Environment Variables → `DEMO_DATA=1` → redeploy.
+
+Si preferís datos falsos **dentro de Supabase** (para probar escrituras), usá
+`npm run db:seed`: mete 60 transacciones reales en la tabla.
+
+---
+
 ## Cómo trabajamos
 
 Ver [`CONTRIBUTING.md`](./CONTRIBUTING.md). Resumen: rama por feature, PR con 1
