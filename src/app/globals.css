@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   Build Day Medellín — sistema visual
+   Concepto: "libro mayor editorial". Tinta cálida oscura, filetes de
+   contabilidad, cifras monoespaciadas tabulares, titulares de periódico
+   financiero. Las cifras son el héroe: todo lo demás las enmarca.
+   ========================================================================== */
+
+@theme {
+  /* --- Tinta y papel --- */
+  --color-ink:       #0D0C0A;
+  --color-ink-2:     #141210;
+  --color-ink-3:     #1C1917;
+  --color-rule:      #2B2520;
+  --color-rule-soft: #201B17;
+  --color-paper:     #F2EDE3;
+  --color-paper-dim: #A2988A;
+  --color-paper-faint: #6B6358;
+
+  /* --- Acentos: contabilidad clásica --- */
+  --color-gold:  #C9A227;  /* marca */
+  --color-green: #5C9E6F;  /* ingresos — "en negro" */
+  --color-red:   #C4574A;  /* gastos  — "en rojo" */
+  --color-blue:  #5B7FA6;  /* informativo */
+
+  /* --- Tipografía --- */
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans:    var(--font-archivo), ui-sans-serif, sans-serif;
+  --font-mono:    var(--font-mono-jb), ui-monospace, monospace;
+}
+
+* {
+  border-color: var(--color-rule);
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+
+  /* Grano sutil de papel: le quita el plano digital al fondo. */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(201, 162, 39, 0.07), transparent),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+}
+
+/* --- Cifras: SIEMPRE tabulares para que las columnas alineen --- */
+.tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* --- Titular editorial --- */
+.headline {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 0, "WONK" 1;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+/* --- Etiqueta de sección tipo cintillo de periódico --- */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-paper-faint);
+}
+
+/* --- Filete de contabilidad --- */
+.rule-dotted {
+  background-image: linear-gradient(to right, var(--color-rule) 33%, transparent 0%);
+  background-size: 6px 1px;
+  background-repeat: repeat-x;
+}
+
+/* --- Entrada escalonada al cargar --- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.rise {
+  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-ink);
+}
+
+/* Scrollbar discreto acorde a la paleta */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--color-ink); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-rule);
+  border: 3px solid var(--color-ink);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-paper-faint); }
