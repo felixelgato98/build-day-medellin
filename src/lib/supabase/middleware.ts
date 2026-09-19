@@ -12,6 +12,16 @@ const PUBLIC_PATHS = ['/login', '/auth']
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request })
 
+  // Supabase todavía no configurado (repo recién clonado, o antes de
+  // `vercel env pull`). Dejamos pasar el request en vez de tirar un 500:
+  // las páginas muestran el aviso de "base de datos no conectada".
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    return response
+  }
+
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

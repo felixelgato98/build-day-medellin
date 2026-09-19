@@ -18,6 +18,18 @@ import type {
  * al equipo. Si es específica de tu módulo, va en tu propia carpeta features/.
  */
 
+/** Lanza un error legible si falta la configuración, en vez de un crash opaco. */
+function assertConfigured() {
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    throw new Error(
+      'Supabase no está configurado. Corré: vercel env pull .env.local',
+    )
+  }
+}
+
 const SELECT_WITH_CATEGORY = `
   *,
   category:categories (id, name, icon, color)
@@ -38,6 +50,7 @@ export interface TransactionFilters {
 export async function getTransactions(
   filters: TransactionFilters = {},
 ): Promise<TransactionWithCategory[]> {
+  assertConfigured()
   const supabase = await createClient()
 
   let query = supabase
@@ -61,6 +74,7 @@ export async function getTransactions(
 
 /** Categorías del workspace, opcionalmente filtradas por tipo. */
 export async function getCategories(kind?: TransactionKind): Promise<Category[]> {
+  assertConfigured()
   const supabase = await createClient()
 
   let query = supabase
@@ -153,6 +167,12 @@ export function currentMonthRange(): { from: string; to: string } {
 
 /** Usuario autenticado, o null. */
 export async function getCurrentUser() {
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    return null
+  }
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   return user
