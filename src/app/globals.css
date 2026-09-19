@@ -2,37 +2,52 @@
 
 /* ============================================================================
    Build Day Medellín — sistema visual
-   Concepto: "libro mayor editorial". Tinta cálida oscura, filetes de
-   contabilidad, cifras monoespaciadas tabulares, titulares de periódico
-   financiero. Las cifras son el héroe: todo lo demás las enmarca.
+   Concepto: "plata con forma". Papel crema, tinta carbón y cuatro pasteles
+   (vainilla, chicle, oliva, lavanda) que le ponen forma a cada categoría de
+   gasto. Referencia: Intelly Healthcare. Los números mandan, las formas
+   acompañan.
    ========================================================================== */
 
 @theme {
-  /* --- Tinta y papel --- */
-  --color-ink:       #0D0C0A;
-  --color-ink-2:     #141210;
-  --color-ink-3:     #1C1917;
-  --color-rule:      #2B2520;
-  --color-rule-soft: #201B17;
-  --color-paper:     #F2EDE3;
-  --color-paper-dim: #A2988A;
-  --color-paper-faint: #6B6358;
+  /* --- Base --- */
+  --color-crema:      #F7F2E8;  /* fondo de toda la app */
+  --color-superficie: #FFFDF8;  /* tarjetas */
+  --color-carbon:     #1C1A17;  /* texto principal, dock, botones */
+  --color-linea:      #E6DDCB;  /* bordes y divisores */
 
-  /* --- Acentos: contabilidad clásica --- */
-  --color-gold:  #C9A227;  /* marca */
-  --color-green: #5C9E6F;  /* ingresos — "en negro" */
-  --color-red:   #C4574A;  /* gastos  — "en rojo" */
-  --color-blue:  #5B7FA6;  /* informativo */
+  /* --- Pasteles: cada uno identifica algo, no decoran --- */
+  --color-vainilla: #F5D565;  /* efectivo, semana */
+  --color-chicle:   #F4B3D3;  /* acción principal (+) */
+  --color-oliva:    #A4B36F;  /* ingresos */
+  --color-lavanda:  #B9C9EF;  /* Bancolombia / Gmail */
+
+  /* --- Compatibilidad con los módulos que todavía usan los nombres viejos.
+         Mismos nombres, valores claros: así sus páginas siguen legibles sobre
+         el crema. En código nuevo usá los tokens de arriba. --- */
+  --color-ink:         #F7F2E8;
+  --color-ink-2:       #FFFDF8;
+  --color-ink-3:       #EFE8DA;
+  --color-rule:        #E6DDCB;
+  --color-rule-soft:   #EFE8DA;
+  --color-paper:       #1C1A17;
+  --color-paper-dim:   #5F5950;
+  --color-paper-faint: #8E8779;
+  --color-gold:  #8F6B00;  /* mostaza oscuro: legible como texto sobre crema */
+  --color-green: #4F7A34;  /* ingresos en cifras */
+  --color-red:   #C0443A;  /* errores */
+  --color-blue:  #4A6FB5;
 
   /* --- Tipografía --- */
-  --font-display: var(--font-fraunces), Georgia, serif;
-  --font-sans:    var(--font-archivo), ui-sans-serif, sans-serif;
-  --font-mono:    var(--font-mono-jb), ui-monospace, monospace;
+  --font-display: var(--font-bricolage), ui-sans-serif, sans-serif;
+  --font-sans:    var(--font-geist), ui-sans-serif, sans-serif;
+  --font-mono:    ui-monospace, monospace;
 
-  /* --- Tokens shadcn/ui mapeados a la paleta editorial ---
+  /* --- Tokens shadcn/ui mapeados a la paleta del proyecto ---
      Permiten que los componentes de `src/components/ui/` generados con la CLI
      de shadcn (bg-background, border-input, ring-ring…) hereden este tema en
-     vez de traer grises genéricos. */
+     vez de traer grises genéricos.
+     Nota: tras el rediseño de #5 la paleta es clara, así que `ink` es el fondo
+     claro y `paper` el texto oscuro. El mapeo sigue siendo correcto. */
   --color-background:            var(--color-ink);
   --color-foreground:            var(--color-paper);
   --color-card:                  var(--color-ink-2);
@@ -48,82 +63,87 @@
   --color-accent:                var(--color-ink-3);
   --color-accent-foreground:     var(--color-paper);
   --color-destructive:           var(--color-red);
-  --color-destructive-foreground: var(--color-paper);
+  --color-destructive-foreground: var(--color-ink);
   --color-border:                var(--color-rule);
   --color-input:                 var(--color-rule);
   --color-ring:                  var(--color-gold);
 }
 
 * {
-  border-color: var(--color-rule);
+  border-color: var(--color-linea);
 }
 
 body {
-  background-color: var(--color-ink);
-  color: var(--color-paper);
+  background-color: var(--color-crema);
+  color: var(--color-carbon);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-
-  /* Grano sutil de papel: le quita el plano digital al fondo. */
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(201, 162, 39, 0.07), transparent),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
 }
 
 /* --- Cifras: SIEMPRE tabulares para que las columnas alineen --- */
 .tabular {
-  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.01em;
 }
 
-/* --- Titular editorial --- */
+/* --- Titular: grotesca con carácter, apretada --- */
 .headline {
   font-family: var(--font-display);
-  font-optical-sizing: auto;
-  font-variation-settings: "SOFT" 0, "WONK" 1;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1;
 }
 
-/* --- Etiqueta de sección tipo cintillo de periódico --- */
+/* --- Etiqueta chica de sección --- */
 .eyebrow {
   font-family: var(--font-sans);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 500;
   color: var(--color-paper-faint);
 }
 
-/* --- Filete de contabilidad --- */
+/* --- Divisor punteado (se mantiene para los módulos que lo usan) --- */
 .rule-dotted {
-  background-image: linear-gradient(to right, var(--color-rule) 33%, transparent 0%);
-  background-size: 6px 1px;
+  background-image: linear-gradient(to right, var(--color-linea) 50%, transparent 0%);
+  background-size: 8px 1px;
   background-repeat: repeat-x;
 }
 
 /* --- Entrada escalonada al cargar --- */
 @keyframes rise {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: none; }
 }
 
 .rise {
-  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* --- Las formas de categoría "brotan" con un rebote suave --- */
+@keyframes pop {
+  0%   { opacity: 0; transform: scale(0.4) rotate(-12deg); }
+  70%  { opacity: 1; transform: scale(1.05) rotate(2deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+.pop {
+  animation: pop 0.7s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .pop {
+    animation: none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-carbon);
+  outline-offset: 3px;
 }
 
 ::selection {
-  background: var(--color-gold);
-  color: var(--color-ink);
+  background: var(--color-vainilla);
+  color: var(--color-carbon);
 }
-
-/* Scrollbar discreto acorde a la paleta */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: var(--color-ink); }
-::-webkit-scrollbar-thumb {
-  background: var(--color-rule);
-  border: 3px solid var(--color-ink);
-  border-radius: 99px;
-}
-::-webkit-scrollbar-thumb:hover { background: var(--color-paper-faint); }

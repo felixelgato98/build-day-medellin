@@ -1,6 +1,6 @@
 import { cn } from '@/lib/cn'
 
-/** Superficie base. Filete de 1px, sin sombras: esto es papel, no plástico. */
+/** Superficie base: redonda, clara y sin sombra. Las formas de color van adentro. */
 export function Card({
   className,
   children,
@@ -9,12 +9,7 @@ export function Card({
   children: React.ReactNode
 }) {
   return (
-    <div
-      className={cn(
-        'border border-rule bg-ink-2/60 backdrop-blur-sm',
-        className,
-      )}
-    >
+    <div className={cn('rounded-[28px] bg-superficie', className)}>
       {children}
     </div>
   )
@@ -30,10 +25,10 @@ export function CardHeader({
   action?: React.ReactNode
 }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 border-b border-rule px-5 py-4">
+    <div className="flex items-end justify-between gap-4 px-5 pb-2 pt-5">
       <div>
-        {eyebrow && <p className="eyebrow mb-1">{eyebrow}</p>}
-        <h2 className="headline text-lg text-paper">{title}</h2>
+        <h2 className="headline text-xl">{title}</h2>
+        {eyebrow && <p className="eyebrow mt-1">{eyebrow}</p>}
       </div>
       {action}
     </div>

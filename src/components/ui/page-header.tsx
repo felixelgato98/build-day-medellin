@@ -7,9 +7,8 @@ export function PageHeader({
 }) {
   return (
     <header className="rise">
-      <p className="eyebrow text-gold">{eyebrow}</p>
-      <h1 className="headline mt-2 text-4xl text-paper md:text-5xl">{title}</h1>
-      <div className="rule-dotted mt-5 h-px" />
+      <p className="eyebrow">{eyebrow}</p>
+      <h1 className="headline mt-2 text-4xl md:text-5xl">{title}</h1>
     </header>
   )
 }
