@@ -41,6 +41,32 @@
   --font-display: var(--font-bricolage), ui-sans-serif, sans-serif;
   --font-sans:    var(--font-geist), ui-sans-serif, sans-serif;
   --font-mono:    ui-monospace, monospace;
+
+  /* --- Tokens shadcn/ui mapeados a la paleta del proyecto ---
+     Permiten que los componentes de `src/components/ui/` generados con la CLI
+     de shadcn (bg-background, border-input, ring-ring…) hereden este tema en
+     vez de traer grises genéricos.
+     Nota: tras el rediseño de #5 la paleta es clara, así que `ink` es el fondo
+     claro y `paper` el texto oscuro. El mapeo sigue siendo correcto. */
+  --color-background:            var(--color-ink);
+  --color-foreground:            var(--color-paper);
+  --color-card:                  var(--color-ink-2);
+  --color-card-foreground:       var(--color-paper);
+  --color-popover:               var(--color-ink-2);
+  --color-popover-foreground:    var(--color-paper);
+  --color-primary:               var(--color-gold);
+  --color-primary-foreground:    var(--color-ink);
+  --color-secondary:             var(--color-ink-3);
+  --color-secondary-foreground:  var(--color-paper);
+  --color-muted:                 var(--color-ink-3);
+  --color-muted-foreground:      var(--color-paper-dim);
+  --color-accent:                var(--color-ink-3);
+  --color-accent-foreground:     var(--color-paper);
+  --color-destructive:           var(--color-red);
+  --color-destructive-foreground: var(--color-ink);
+  --color-border:                var(--color-rule);
+  --color-input:                 var(--color-rule);
+  --color-ring:                  var(--color-gold);
 }
 
 * {

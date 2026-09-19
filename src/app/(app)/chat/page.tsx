@@ -3,32 +3,69 @@
 import { useState } from 'react'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
+import {
+  AlertTriangle,
+  CalendarDays,
+  Lightbulb,
+  RotateCcw,
+  Scale,
+  Sparkles,
+  Utensils,
+  Wallet,
+} from 'lucide-react'
+
 import { PageHeader } from '@/components/ui/page-header'
 import { ModuleNotice } from '@/components/ui/module-notice'
+import { AiChatComposer, ChatActionButton } from '@/components/ui/v0-ai-chat'
+import { ChatMessages } from '@/features/chat/components/chat-messages'
+import { CHAT_MODEL } from '@/lib/constants'
 
 const SUGERENCIAS = [
-  '¿En qué se me fue la plata este mes?',
-  '¿Cuánto gasté en restaurantes?',
-  '¿Cómo voy de balance?',
-  'Dame 3 ideas para gastar menos',
+  { icon: Wallet, label: '¿En qué se me fue la plata este mes?' },
+  { icon: Utensils, label: '¿Cuánto gasté en restaurantes?' },
+  { icon: Scale, label: '¿Cómo voy de balance?' },
+  { icon: Lightbulb, label: 'Dame 3 ideas para gastar menos' },
 ]
 
 export default function ChatPage() {
   const [input, setInput] = useState('')
-  const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({ api: '/api/chat' }),
-  })
+  const { messages, sendMessage, status, stop, error, regenerate, clearError, setMessages } =
+    useChat({
+      transport: new DefaultChatTransport({ api: '/api/chat' }),
+    })
 
   const busy = status === 'submitted' || status === 'streaming'
+  const empty = messages.length === 0
 
   function send(text: string) {
-    if (!text.trim() || busy) return
-    sendMessage({ text })
+    const clean = text.trim()
+    if (!clean || busy) return
+    sendMessage({ text: clean })
     setInput('')
   }
 
+  function reset() {
+    if (busy) stop()
+    clearError()
+    setMessages([])
+    setInput('')
+  }
+
+  const contextTag = (
+    <>
+      <span className="flex items-center gap-1.5">
+        <CalendarDays className="h-3.5 w-3.5" />
+        Contexto: mes actual
+      </span>
+      <span className="hidden text-rule sm:inline">·</span>
+      <span className="tabular hidden truncate sm:inline">{CHAT_MODEL.split('/').pop()}</span>
+    </>
+  )
+
   return (
-    <div className="mx-auto flex h-full max-w-3xl flex-col space-y-8">
+    // En móvil la página fluye y el compositor queda pegado abajo (sticky).
+    // En escritorio ocupa el alto de la ventana y el hilo hace scroll interno.
+    <div className="mx-auto flex max-w-3xl flex-col gap-6 md:h-[calc(100dvh-6rem)] md:min-h-[560px]">
       <PageHeader eyebrow="Asistente" title="Chat IA" />
 
       <ModuleNotice module="Chat IA" folder="src/features/chat/">
@@ -41,69 +78,110 @@ export default function ChatPage() {
         <span className="tabular text-gold">src/lib/constants.ts</span>.
       </ModuleNotice>
 
-      {/* ----------------------------- Mensajes ---------------------------- */}
-      <div className="min-h-[280px] flex-1 space-y-5 border border-rule p-5">
-        {messages.length === 0 && (
-          <div className="space-y-4">
-            <p className="text-sm text-paper-faint">
-              Preguntale lo que sea sobre tus finanzas.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {SUGERENCIAS.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => send(s)}
-                  className="border border-rule px-3 py-1.5 text-xs text-paper-dim transition-colors hover:border-gold hover:text-gold"
-                >
-                  {s}
-                </button>
+      {/* =========================== Zona de chat =========================== */}
+      <section className="flex min-h-0 flex-1 flex-col">
+        {empty ? (
+          /* ------------------------ Estado inicial ------------------------ */
+          <div className="rise flex flex-1 flex-col justify-center gap-8 py-6 md:py-0">
+            <div className="text-center">
+              <p className="eyebrow mb-3 flex items-center justify-center gap-2 text-gold">
+                <Sparkles className="h-3.5 w-3.5" />
+                Asistente financiero
+              </p>
+              <h2 className="headline text-3xl text-paper md:text-5xl">
+                ¿En qué te ayudo con tu plata?
+              </h2>
+              <p className="mt-3 text-sm text-paper-dim">
+                Conoce tus ingresos, gastos y balance del mes. Preguntá en tus palabras.
+              </p>
+            </div>
+
+            <AiChatComposer
+              value={input}
+              onChange={setInput}
+              onSubmit={send}
+              disabled={busy}
+              autoFocus
+              footer={contextTag}
+            />
+
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {SUGERENCIAS.map(({ icon: Icon, label }) => (
+                <ChatActionButton
+                  key={label}
+                  icon={<Icon className="h-4 w-4" />}
+                  label={label}
+                  onClick={() => send(label)}
+                  disabled={busy}
+                />
               ))}
             </div>
           </div>
-        )}
-
-        {messages.map((m) => (
-          <div key={m.id} className="space-y-1.5">
-            <p className="eyebrow">{m.role === 'user' ? 'Vos' : 'Asistente'}</p>
-            <div
-              className={
-                m.role === 'user'
-                  ? 'border-l-2 border-gold pl-3 text-sm text-paper'
-                  : 'text-sm leading-relaxed text-paper-dim'
-              }
-            >
-              {m.parts.map((part, i) =>
-                part.type === 'text' ? <span key={i}>{part.text}</span> : null,
-              )}
+        ) : (
+          /* ------------------------- Conversación ------------------------- */
+          <>
+            <div className="flex items-center justify-between border-b border-rule pb-2">
+              <p className="eyebrow">
+                Conversación ·{' '}
+                <span className="tabular text-paper-dim">{messages.length}</span>{' '}
+                {messages.length === 1 ? 'mensaje' : 'mensajes'}
+              </p>
+              <button
+                type="button"
+                onClick={reset}
+                className="flex items-center gap-1.5 text-xs text-paper-dim transition-colors hover:text-gold"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Nueva conversación
+              </button>
             </div>
-          </div>
-        ))}
 
-        {busy && <p className="eyebrow animate-pulse">Pensando…</p>}
-      </div>
+            <ChatMessages
+              messages={messages}
+              status={status}
+              className="min-h-[240px] flex-1 md:min-h-0"
+            />
 
-      {/* ------------------------------ Input ------------------------------ */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          send(input)
-        }}
-        className="flex gap-2"
-      >
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="¿Cuánto gasté en mercado?"
-          className="flex-1 border border-rule bg-ink-2 px-3 py-2.5 text-sm text-paper outline-none transition-colors placeholder:text-paper-faint focus:border-gold"
-        />
-        <button
-          type="submit"
-          disabled={busy || !input.trim()}
-          className="bg-gold px-5 py-2.5 text-sm font-semibold text-ink transition-opacity hover:opacity-90 disabled:opacity-40"
-        >
-          Enviar
-        </button>
-      </form>
+            {error && (
+              <div className="rise mb-3 flex flex-wrap items-center gap-3 border border-red/50 bg-red/5 px-4 py-3 text-sm">
+                <AlertTriangle className="h-4 w-4 shrink-0 text-red" />
+                <p className="min-w-0 flex-1 text-paper-dim">
+                  No pude responder.{' '}
+                  <span className="text-paper-faint">{error.message}</span>
+                </p>
+                <div className="flex items-center gap-3 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => regenerate()}
+                    className="text-gold underline underline-offset-4 hover:opacity-80"
+                  >
+                    Reintentar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={clearError}
+                    className="text-paper-faint hover:text-paper"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="sticky bottom-0 bg-ink pt-3 pb-2 md:static md:pb-0">
+              <AiChatComposer
+                value={input}
+                onChange={setInput}
+                onSubmit={send}
+                onStop={stop}
+                streaming={busy}
+                placeholder="Seguí preguntando…"
+                footer={contextTag}
+              />
+            </div>
+          </>
+        )}
+      </section>
     </div>
   )
 }
