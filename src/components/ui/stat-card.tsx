@@ -3,15 +3,15 @@ import { formatCOP } from '@/lib/money'
 
 type Tone = 'neutral' | 'income' | 'expense'
 
+/** El tono pinta el fondo, no la cifra: la cifra siempre en carbón, legible. */
 const TONE: Record<Tone, string> = {
-  neutral: 'text-paper',
-  income: 'text-green',
-  expense: 'text-red',
+  neutral: 'bg-superficie',
+  income: 'bg-oliva/45',
+  expense: 'bg-lavanda/60',
 }
 
 /**
- * La cifra es el héroe. Grande, monoespaciada y tabular para que varias
- * tarjetas en fila alineen sus dígitos como en un libro contable.
+ * Cifra grande y tabular para que varias tarjetas en fila alineen sus dígitos.
  */
 export function StatCard({
   label,
@@ -27,12 +27,10 @@ export function StatCard({
   className?: string
 }) {
   return (
-    <div className={cn('border border-rule bg-ink-2/60 px-5 py-4', className)}>
-      <p className="eyebrow">{label}</p>
-      <p className={cn('tabular mt-2 text-3xl font-medium', TONE[tone])}>
-        {formatCOP(cents)}
-      </p>
-      {hint && <p className="mt-1 text-xs text-paper-faint">{hint}</p>}
+    <div className={cn('rounded-[24px] px-5 py-4', TONE[tone], className)}>
+      <p className="text-sm text-paper-dim">{label}</p>
+      <p className="headline tabular mt-2 text-3xl">{formatCOP(cents)}</p>
+      {hint && <p className="mt-1 text-xs text-paper-dim">{hint}</p>}
     </div>
   )
 }
