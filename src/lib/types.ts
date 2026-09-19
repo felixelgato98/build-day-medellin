@@ -12,20 +12,20 @@ export type TransactionSource = 'manual' | 'cash' | 'gmail' | 'import'
 export type MemberRole = 'owner' | 'member'
 export type ChatRole = 'user' | 'assistant' | 'system'
 
-export interface Workspace {
+export type Workspace = {
   id: string
   name: string
   created_at: string
 }
 
-export interface WorkspaceMember {
+export type WorkspaceMember = {
   workspace_id: string
   user_id: string
   role: MemberRole
   created_at: string
 }
 
-export interface Category {
+export type Category = {
   id: string
   workspace_id: string
   name: string
@@ -35,7 +35,7 @@ export interface Category {
   created_at: string
 }
 
-export interface Transaction {
+export type Transaction = {
   id: string
   workspace_id: string
   created_by: string | null
@@ -56,11 +56,11 @@ export interface Transaction {
 }
 
 /** Transacción con su categoría ya resuelta — lo que consumen las vistas. */
-export interface TransactionWithCategory extends Transaction {
+export type TransactionWithCategory = Transaction & {
   category: Pick<Category, 'id' | 'name' | 'icon' | 'color'> | null
 }
 
-export interface GmailAccount {
+export type GmailAccount = {
   id: string
   workspace_id: string
   user_id: string
@@ -70,7 +70,7 @@ export interface GmailAccount {
   created_at: string
 }
 
-export interface GmailSyncLog {
+export type GmailSyncLog = {
   id: string
   workspace_id: string
   account_id: string | null
@@ -81,7 +81,7 @@ export interface GmailSyncLog {
   error: string | null
 }
 
-export interface ChatConversation {
+export type ChatConversation = {
   id: string
   workspace_id: string
   user_id: string
@@ -89,7 +89,7 @@ export interface ChatConversation {
   created_at: string
 }
 
-export interface ChatMessage {
+export type ChatMessage = {
   id: string
   conversation_id: string
   role: ChatRole
@@ -100,23 +100,26 @@ export interface ChatMessage {
 
 type Insert<T, Optional extends keyof T> = Omit<T, Optional> & Partial<Pick<T, Optional>>
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       workspaces: {
         Row: Workspace
         Insert: Insert<Workspace, 'id' | 'created_at'>
         Update: Partial<Workspace>
+        Relationships: []
       }
       workspace_members: {
         Row: WorkspaceMember
         Insert: Insert<WorkspaceMember, 'role' | 'created_at'>
         Update: Partial<WorkspaceMember>
+        Relationships: []
       }
       categories: {
         Row: Category
         Insert: Insert<Category, 'id' | 'icon' | 'color' | 'created_at'>
         Update: Partial<Category>
+        Relationships: []
       }
       transactions: {
         Row: Transaction
@@ -127,11 +130,13 @@ export interface Database {
           | 'created_at' | 'updated_at'
         >
         Update: Partial<Transaction>
+        Relationships: []
       }
       gmail_accounts: {
         Row: GmailAccount
         Insert: Insert<GmailAccount, 'id' | 'refresh_token' | 'last_sync_at' | 'created_at'>
         Update: Partial<GmailAccount>
+        Relationships: []
       }
       gmail_sync_log: {
         Row: GmailSyncLog
@@ -141,16 +146,19 @@ export interface Database {
           | 'messages_seen' | 'messages_saved' | 'error'
         >
         Update: Partial<GmailSyncLog>
+        Relationships: []
       }
       chat_conversations: {
         Row: ChatConversation
         Insert: Insert<ChatConversation, 'id' | 'title' | 'created_at'>
         Update: Partial<ChatConversation>
+        Relationships: []
       }
       chat_messages: {
         Row: ChatMessage
         Insert: Insert<ChatMessage, 'id' | 'parts' | 'created_at'>
         Update: Partial<ChatMessage>
+        Relationships: []
       }
     }
     Views: Record<string, never>
