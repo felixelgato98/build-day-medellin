@@ -1,11 +1,12 @@
 import { cn } from '@/lib/cn'
 import type { TransactionSource } from '@/lib/types'
 
+/** Cada origen tiene su pastel fijo en toda la app: efectivo vainilla, Bancolombia lavanda. */
 const SOURCES: Record<TransactionSource, { label: string; className: string }> = {
-  manual: { label: 'Manual',     className: 'text-paper-dim border-rule' },
-  cash:   { label: 'Efectivo',   className: 'text-gold border-gold/40' },
-  gmail:  { label: 'Bancolombia',className: 'text-blue border-blue/40' },
-  import: { label: 'Importado',  className: 'text-paper-dim border-rule' },
+  manual: { label: 'Manual',      className: 'bg-rule-soft' },
+  cash:   { label: 'Efectivo',    className: 'bg-vainilla/70' },
+  gmail:  { label: 'Bancolombia', className: 'bg-lavanda/80' },
+  import: { label: 'Importado',   className: 'bg-rule-soft' },
 }
 
 /** Marca de dónde salió una transacción. Los 3 módulos de datos lo usan. */
@@ -14,7 +15,7 @@ export function SourceTag({ source }: { source: TransactionSource }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider',
+        'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium text-carbon',
         s.className,
       )}
     >

@@ -18,11 +18,11 @@ export function TransactionList({
   }
 
   return (
-    <div className="border border-rule">
+    <div className="overflow-hidden rounded-[28px] bg-superficie">
       {transactions.map((t) => (
         <div
           key={t.id}
-          className="flex items-center justify-between gap-4 border-b border-rule-soft px-5 py-3.5 transition-colors last:border-0 hover:bg-ink-2"
+          className="flex items-center justify-between gap-4 border-b border-rule-soft px-5 py-3.5 transition-colors last:border-0 hover:bg-ink-3/50"
         >
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm text-paper">{t.description}</p>

@@ -50,9 +50,9 @@ export function ChatMessages({ messages, status, className }: ChatMessagesProps)
     <div
       ref={scrollerRef}
       onScroll={onScroll}
-      className={cn('overflow-y-auto scroll-smooth px-1 py-2', className)}
+      className={cn('overflow-y-auto scroll-smooth px-1 py-3', className)}
     >
-      <ol className="space-y-7">
+      <ol className="space-y-6">
         {messages.map((m, i) => {
           const isUser = m.role === 'user'
           const isLast = i === messages.length - 1
@@ -83,11 +83,8 @@ export function ChatMessages({ messages, status, className }: ChatMessagesProps)
 function UserBubble({ text }: { text: string }) {
   return (
     <div className="flex justify-end">
-      <div className="max-w-[85%] md:max-w-[75%]">
-        <p className="eyebrow mb-1.5 text-right">Vos</p>
-        <div className="border border-rule border-r-2 border-r-gold bg-ink-2 px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap text-paper">
-          {text}
-        </div>
+      <div className="max-w-[85%] rounded-[22px] rounded-br-lg bg-carbon px-4 py-3 text-[15px] leading-relaxed whitespace-pre-wrap text-crema md:max-w-[75%]">
+        {text}
       </div>
     </div>
   )
@@ -106,30 +103,31 @@ function AssistantBubble({
     <div className="group flex gap-3">
       <div
         className={cn(
-          'mt-5 flex h-7 w-7 shrink-0 items-center justify-center border border-rule bg-ink-2 text-gold',
-          streaming && 'border-gold/60 shadow-[0_0_0_3px_rgba(201,162,39,0.12)]',
+          'mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-chicle text-carbon transition-transform',
+          streaming && 'pop',
         )}
       >
-        <Sparkles className={cn('h-3.5 w-3.5', streaming && 'animate-pulse')} />
+        <Sparkles className={cn('size-4', streaming && 'animate-pulse')} strokeWidth={2} />
       </div>
 
-      <div className="min-w-0 flex-1">
-        <div className="mb-1.5 flex items-center gap-3">
-          <p className="eyebrow">Asistente</p>
-          {!streaming && text && <CopyButton text={text} />}
-        </div>
-
+      <div className="min-w-0 flex-1 pt-1">
         {thinking ? (
           <ThinkingDots />
         ) : (
-          <div className="text-sm leading-relaxed whitespace-pre-wrap text-paper-dim">
+          <div className="text-[15px] leading-relaxed whitespace-pre-wrap text-carbon">
             {text}
             {streaming && (
               <span
                 aria-hidden
-                className="ml-0.5 inline-block h-[1em] w-[0.5em] translate-y-[2px] animate-pulse bg-gold"
+                className="ml-0.5 inline-block h-[1em] w-[0.5em] translate-y-[2px] animate-pulse rounded-sm bg-carbon"
               />
             )}
+          </div>
+        )}
+
+        {!streaming && text && (
+          <div className="mt-2">
+            <CopyButton text={text} />
           </div>
         )}
       </div>
@@ -139,12 +137,12 @@ function AssistantBubble({
 
 function ThinkingDots() {
   return (
-    <div className="flex items-center gap-2 py-1 text-xs text-paper-faint">
+    <div className="flex items-center gap-2 py-1.5 text-sm text-paper-dim">
       <span className="flex gap-1">
         {[0, 1, 2].map((i) => (
           <span
             key={i}
-            className="h-1.5 w-1.5 animate-bounce bg-gold/80"
+            className="size-1.5 animate-bounce rounded-full bg-carbon/70"
             style={{ animationDelay: `${i * 120}ms` }}
           />
         ))}
@@ -173,11 +171,11 @@ function CopyButton({ text }: { text: string }) {
       onClick={copy}
       aria-label="Copiar respuesta"
       className={cn(
-        'flex items-center gap-1 text-[11px] text-paper-faint transition-all duration-200 hover:text-gold',
+        'flex items-center gap-1 rounded-full px-2 py-0.5 text-xs text-paper-faint transition-all duration-200 hover:bg-ink-3 hover:text-carbon',
         copied ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100',
       )}
     >
-      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+      {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
       {copied ? 'Copiado' : 'Copiar'}
     </button>
   )

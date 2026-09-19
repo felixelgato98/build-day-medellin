@@ -2,12 +2,12 @@
 
 /**
  * Compositor de chat IA estilo v0 (Vercel), adaptado al sistema visual
- * "libro mayor editorial" de la app y a la API de `useChat` del AI SDK.
+ * "plata con forma" de la app y a la API de `useChat` del AI SDK.
  *
  * Origen: componente `v0-ai-chat` de 21st.dev / v0. Cambios respecto al
  * original: sin marca ni acciones de v0 (Figma, screenshots…), controlado
  * desde afuera (value/onChange/onSubmit), botón de detener durante el
- * streaming, tokens shadcn en lugar de grises hardcodeados y textos en
+ * streaming, tokens del tema en lugar de grises hardcodeados y textos en
  * español. Los chips de acción (`ChatActionButton`) se exportan aparte para
  * que cada pantalla decida cuáles mostrar.
  */
@@ -136,23 +136,14 @@ export function AiChatComposer({
   return (
     <div
       className={cn(
-        'relative border bg-ink-2 transition-[border-color,box-shadow] duration-200',
+        'relative rounded-[28px] border bg-superficie transition-[border-color,box-shadow] duration-200',
         focused
-          ? 'border-gold/70 shadow-[0_0_0_1px_rgba(201,162,39,0.25),0_18px_50px_-24px_rgba(201,162,39,0.35)]'
-          : 'border-rule hover:border-paper-faint/60',
+          ? 'border-carbon shadow-[0_12px_40px_-24px_rgba(28,26,23,0.45)]'
+          : 'border-linea hover:border-paper-faint',
         disabled && 'opacity-60',
         className,
       )}
     >
-      {/* Filete dorado superior: aparece al enfocar */}
-      <div
-        aria-hidden
-        className={cn(
-          'absolute inset-x-0 top-0 h-px bg-gold transition-opacity duration-300',
-          focused ? 'opacity-100' : 'opacity-0',
-        )}
-      />
-
       <div className="overflow-y-auto">
         <Textarea
           ref={textareaRef}
@@ -170,10 +161,10 @@ export function AiChatComposer({
           rows={1}
           aria-label="Mensaje para el asistente"
           className={cn(
-            'w-full px-4 py-3',
+            'w-full px-5 pt-4 pb-2',
             'resize-none',
-            'border-none bg-transparent',
-            'text-sm leading-relaxed text-paper',
+            'rounded-none border-none bg-transparent',
+            'text-[15px] leading-relaxed text-carbon',
             'focus:outline-none',
             'focus-visible:ring-0 focus-visible:ring-offset-0',
             'placeholder:text-sm placeholder:text-paper-faint',
@@ -182,7 +173,7 @@ export function AiChatComposer({
         />
       </div>
 
-      <div className="flex items-center justify-between gap-3 px-3 pb-3">
+      <div className="flex items-center justify-between gap-3 px-3 pb-3 pl-5">
         <div className="flex min-w-0 items-center gap-2 text-xs text-paper-faint">
           {footer}
         </div>
@@ -194,7 +185,7 @@ export function AiChatComposer({
               focused && hasText ? 'opacity-100' : 'opacity-0',
             )}
           >
-            <CornerDownLeft className="h-3 w-3" />
+            <CornerDownLeft className="size-3" />
             Enter envía · Shift+Enter salto
           </span>
 
@@ -203,9 +194,9 @@ export function AiChatComposer({
               type="button"
               onClick={onStop}
               aria-label="Detener respuesta"
-              className="flex h-8 w-8 items-center justify-center border border-rule bg-ink-3 text-paper transition-colors hover:border-red hover:text-red"
+              className="grid size-10 place-items-center rounded-full border border-linea bg-superficie text-carbon transition-colors hover:border-red hover:text-red"
             >
-              <Square className="h-3.5 w-3.5 fill-current" />
+              <Square className="size-3.5 fill-current" />
             </button>
           ) : (
             <button
@@ -214,13 +205,13 @@ export function AiChatComposer({
               disabled={!canSend}
               aria-label="Enviar"
               className={cn(
-                'flex h-8 w-8 items-center justify-center border transition-all duration-200',
+                'grid size-10 place-items-center rounded-full transition-all duration-200',
                 canSend
-                  ? 'border-gold bg-gold text-ink shadow-[0_0_0_3px_rgba(201,162,39,0.18)] hover:-translate-y-px hover:shadow-[0_0_0_4px_rgba(201,162,39,0.28)]'
-                  : 'border-rule bg-transparent text-paper-faint',
+                  ? 'bg-carbon text-crema hover:-translate-y-0.5 hover:scale-105'
+                  : 'bg-ink-3 text-paper-faint',
               )}
             >
-              <ArrowUpIcon className="h-4 w-4" />
+              <ArrowUpIcon className="size-4" strokeWidth={2.25} />
             </button>
           )}
         </div>
@@ -238,6 +229,8 @@ export interface ChatActionButtonProps {
   label: string
   onClick?: () => void
   disabled?: boolean
+  /** Clase de fondo pastel para el icono, p. ej. `bg-vainilla`. */
+  tint?: string
   className?: string
 }
 
@@ -246,6 +239,7 @@ export function ChatActionButton({
   label,
   onClick,
   disabled,
+  tint = 'bg-ink-3',
   className,
 }: ChatActionButtonProps) {
   return (
@@ -254,16 +248,21 @@ export function ChatActionButton({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'group flex items-center gap-2 border border-rule bg-ink-2 px-3.5 py-2 text-left text-paper-dim',
-        'transition-all duration-200 hover:-translate-y-px hover:border-gold/70 hover:bg-ink-3 hover:text-paper',
+        'group flex items-center gap-2.5 rounded-full border border-linea bg-superficie py-1.5 pl-1.5 pr-4 text-left text-sm text-carbon',
+        'transition-all duration-200 hover:-translate-y-0.5 hover:border-carbon',
         'disabled:pointer-events-none disabled:opacity-40',
         className,
       )}
     >
-      <span className="text-paper-faint transition-colors group-hover:text-gold">
+      <span
+        className={cn(
+          'grid size-8 shrink-0 place-items-center rounded-full text-carbon transition-transform group-hover:scale-105',
+          tint,
+        )}
+      >
         {icon}
       </span>
-      <span className="text-xs">{label}</span>
+      <span>{label}</span>
     </button>
   )
 }
